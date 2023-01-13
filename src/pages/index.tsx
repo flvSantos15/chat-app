@@ -9,6 +9,10 @@ import { Button } from '@chakra-ui/button'
 export default function Login() {
   const router = useRouter()
 
+  const handleSignIn = () => {
+    router.push('/home')
+  }
+
   const handleRedirectToRegister = () => {
     router.push('/register')
   }

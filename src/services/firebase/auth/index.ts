@@ -3,22 +3,38 @@ import {
   updateProfile,
   User
 } from 'firebase/auth'
+import { doc, setDoc } from 'firebase/firestore'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import { auth, storage } from '../../firebase'
+import { auth, storage, db } from '../../firebase'
 
 interface CreateUserProps {
   email: string
   password: string
+  displayName: string
 }
 
-export async function createUser({ email, password }: CreateUserProps) {
+export async function createUserAuthetication({
+  email,
+  password,
+  displayName
+}: CreateUserProps) {
   return await createUserWithEmailAndPassword(auth, email, password).then(
-    (userCredential) => {
-      // Signed in
+    async (userCredential) => {
       const user = userCredential.user
 
+      const collectionPath = 'users'
+
+      const userDoc = {
+        uid: user.uid,
+        displayName,
+        email
+      }
+
+      const userDocCollectionReference = doc(db, collectionPath, user.uid)
+
+      await setDoc(userDocCollectionReference, userDoc)
+
       return user
-      // ...
     }
   )
 }
@@ -26,10 +42,16 @@ export async function createUser({ email, password }: CreateUserProps) {
 interface UploadImageProps {
   name: string
   file: Blob | Uint8Array | ArrayBuffer
+  email: string
   user: User
 }
 
-export async function uploadImage({ file, name, user }: UploadImageProps) {
+export async function uploadImage({
+  file,
+  name,
+  user,
+  email
+}: UploadImageProps) {
   const storageRef = ref(storage, name)
 
   const uploadTask = uploadBytesResumable(storageRef, file)
@@ -58,10 +80,61 @@ export async function uploadImage({ file, name, user }: UploadImageProps) {
       getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
         // console.log('File available at', downloadURL)
         await updateProfile(user, {
-          displayName: name,
-          photoURL: downloadURL
+          displayName: name
+          // photoURL: downloadURL
         })
+
+        const collectionPath = 'users'
+
+        const userDoc = {
+          // dados do user que quero guardar
+          uid: user.uid,
+          displayName: name,
+          email
+          // photoURL: downloadURL
+        }
+
+        const userDocCollectionReference = doc(db, collectionPath, user.uid)
+
+        await setDoc(userDocCollectionReference, userDoc)
       })
     }
   )
+}
+
+interface CreateUserDoc {
+  user: User
+  displayName: string
+  email: string
+}
+
+export const createUserDoc = async ({
+  user,
+  displayName,
+  email
+}: CreateUserDoc) => {
+  try {
+    const collectionPath = 'users'
+
+    const userDoc = {
+      // dados do user que quero guardar
+      uid: user.uid,
+      displayName,
+      email
+      // photoURL: downloadURL
+    }
+
+    const userDocCollectionReference = doc(db, collectionPath, user.uid)
+
+    await setDoc(userDocCollectionReference, userDoc)
+
+    console.log({
+      db,
+      userDocCollectionReference
+    })
+
+    return userDoc
+  } catch (err) {
+    return err
+  }
 }

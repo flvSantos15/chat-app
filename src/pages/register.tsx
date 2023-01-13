@@ -8,8 +8,17 @@ import { Input } from '@chakra-ui/input'
 import { Button } from '@chakra-ui/button'
 
 import { MdAddPhotoAlternate } from 'react-icons/md'
-import { createUser, uploadImage } from '../services/firebase/auth'
-import { User } from 'firebase/auth'
+import {
+  createUserAuthetication,
+  uploadImage,
+  createUserDoc
+} from '../services/firebase/auth'
+
+interface ICreateUserDocResponse {
+  uid: string
+  displayName: string
+  email: string
+}
 
 export default function Register() {
   const router = useRouter()
@@ -17,6 +26,7 @@ export default function Register() {
   const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  // const [file, setFile] = useState<FileList | null>(null)
   const [file, setFile] = useState<FileList | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -24,7 +34,6 @@ export default function Register() {
     router.push('/')
   }
 
-  // parei no 2:02:00
   const handleSignUp = async (e: FormEvent) => {
     e.preventDefault()
 
@@ -35,26 +44,13 @@ export default function Register() {
         return
       }
 
-      const response = await createUser({
+      const response = await createUserAuthetication({
         email,
-        password
+        password,
+        displayName
       })
 
-      console.log(response, 'response handleSignUp no register')
-      if (response) {
-        // const newFile = document.createElement('a')
-        // newFile.href = window.URL.createObjectURL(file?.item(0) as Blob)
-
-        const blob = new Blob([file?.item(0) as Blob])
-
-        // const pngUrl = newFile.href
-        // const pngImageBytes = await fetch(pngUrl).then((res) => res.arrayBuffer())
-        uploadImage({
-          name: displayName,
-          file: blob,
-          user: response
-        })
-      }
+      router.push('/')
     } catch (err) {
       // configurar o sentry aqui
       console.log(err, 'erro no handleSignUp no register')

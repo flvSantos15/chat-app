@@ -1,8 +1,21 @@
+import { useRouter } from 'next/router'
+
+import { signOut } from 'firebase/auth'
+import { auth } from '../services/firebase'
+
 import { Avatar } from '@chakra-ui/avatar'
 import { Button } from '@chakra-ui/button'
 import { Flex, Text } from '@chakra-ui/layout'
 
 export function Navbar() {
+  const router = useRouter()
+
+  const handleSignOut = () => {
+    signOut(auth)
+
+    router.push('/')
+  }
+
   return (
     <Flex
       alignItems="center"
@@ -25,6 +38,7 @@ export function Navbar() {
           _hover={{
             opacity: '0.7'
           }}
+          onClick={handleSignOut}
         >
           Logout
         </Button>
