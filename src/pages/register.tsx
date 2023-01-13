@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { FormEvent, useState } from 'react'
 
 import { Flex, Text } from '@chakra-ui/layout'
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
@@ -7,13 +8,65 @@ import { Input } from '@chakra-ui/input'
 import { Button } from '@chakra-ui/button'
 
 import { MdAddPhotoAlternate } from 'react-icons/md'
+import { createUser, uploadImage } from '../services/firebase/auth'
+import { User } from 'firebase/auth'
 
 export default function Register() {
   const router = useRouter()
 
+  const [displayName, setDisplayName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [file, setFile] = useState<FileList | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
   const handleRedirectToLogin = () => {
     router.push('/')
   }
+
+  // parei no 2:02:00
+  const handleSignUp = async (e: FormEvent) => {
+    e.preventDefault()
+
+    setIsLoading(true)
+
+    try {
+      if (!email || !password || !displayName) {
+        return
+      }
+
+      const response = await createUser({
+        email,
+        password
+      })
+
+      console.log(response, 'response handleSignUp no register')
+      if (response) {
+        // const newFile = document.createElement('a')
+        // newFile.href = window.URL.createObjectURL(file?.item(0) as Blob)
+
+        const blob = new Blob([file?.item(0) as Blob])
+
+        // const pngUrl = newFile.href
+        // const pngImageBytes = await fetch(pngUrl).then((res) => res.arrayBuffer())
+        uploadImage({
+          name: displayName,
+          file: blob,
+          user: response
+        })
+      }
+    } catch (err) {
+      // configurar o sentry aqui
+      console.log(err, 'erro no handleSignUp no register')
+    } finally {
+      setDisplayName('')
+      setEmail('')
+      setPassword('')
+      setFile(null)
+      setIsLoading(false)
+    }
+  }
+
   return (
     <>
       <Head>
@@ -46,88 +99,101 @@ export default function Register() {
             Register
           </Text>
 
-          <FormControl display="flex" flexDir="column" gap="15px">
-            <Input
-              type="text"
-              placeholder="display name"
-              p="15px"
-              border="none"
-              w="280px"
-              borderBottom="1px solid #a7bcff"
-              _placeholder={{
-                color: 'rgba(175, 175, 175)'
-              }}
-            />
-          </FormControl>
+          <Flex as="form" flexDir="column" gap="14px" onSubmit={handleSignUp}>
+            <FormControl display="flex" flexDir="column" gap="15px">
+              <Input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="display name"
+                p="15px"
+                border="none"
+                w="280px"
+                borderBottom="1px solid #a7bcff"
+                _placeholder={{
+                  color: 'rgba(175, 175, 175)'
+                }}
+              />
+            </FormControl>
 
-          <FormControl display="flex" flexDir="column" gap="15px">
-            <Input
-              type="email"
-              placeholder="email"
-              p="15px"
-              border="none"
-              w="280px"
-              borderBottom="1px solid #a7bcff"
-              _placeholder={{
-                color: 'rgba(175, 175, 175)'
-              }}
-            />
-          </FormControl>
+            <FormControl display="flex" flexDir="column" gap="15px">
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email"
+                p="15px"
+                border="none"
+                w="280px"
+                borderBottom="1px solid #a7bcff"
+                _placeholder={{
+                  color: 'rgba(175, 175, 175)'
+                }}
+              />
+            </FormControl>
 
-          <FormControl display="flex" flexDir="column" gap="15px">
-            <Input
-              type="password"
-              placeholder="password"
-              p="15px"
-              border="none"
-              w="280px"
-              borderBottom="1px solid #a7bcff"
-              _placeholder={{
-                color: 'rgba(175, 175, 175)'
-              }}
-            />
-          </FormControl>
+            <FormControl display="flex" flexDir="column" gap="15px">
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="password"
+                p="15px"
+                border="none"
+                w="280px"
+                borderBottom="1px solid #a7bcff"
+                _placeholder={{
+                  color: 'rgba(175, 175, 175)'
+                }}
+              />
+            </FormControl>
 
-          <FormControl display="flex" flexDir="column" gap="15px">
-            <FormLabel
-              htmlFor="file"
-              display="flex"
-              alignItems="center"
-              gap="10px"
-              color="#8da4f1"
-              fontSize="12px"
+            <FormControl display="flex" flexDir="column" gap="15px">
+              <FormLabel
+                htmlFor="file"
+                display="flex"
+                alignItems="center"
+                gap="10px"
+                color="#8da4f1"
+                fontSize="12px"
+                cursor="pointer"
+              >
+                <MdAddPhotoAlternate color="#8da4f1" size="2rem" />
+                Add an avatar
+              </FormLabel>
+              <Input
+                id="file"
+                name="file"
+                type="file"
+                onChange={(e) => setFile(e.target.files)}
+                display="none"
+                p="15px"
+                border="none"
+                w="280px"
+                borderBottom="1px solid #a7bcff"
+                _placeholder={{
+                  color: 'rgba(175, 175, 175)'
+                }}
+              />
+            </FormControl>
+
+            <Button
+              type="submit"
+              colorScheme="none"
+              bg="#7b96ec"
+              color="#fff"
+              p="10px"
+              fontWeight="bold"
               cursor="pointer"
-            >
-              <MdAddPhotoAlternate color="#8da4f1" size="2rem" />
-              Add an avatar
-            </FormLabel>
-            <Input
-              id="file"
-              name="file"
-              type="file"
-              display="none"
-              p="15px"
               border="none"
-              w="280px"
-              borderBottom="1px solid #a7bcff"
-              _placeholder={{
-                color: 'rgba(175, 175, 175)'
-              }}
-            />
-          </FormControl>
-
-          <Button
-            colorScheme="none"
-            bg="#7b96ec"
-            color="#fff"
-            p="10px"
-            fontWeight="bold"
-            cursor="pointer"
-            border="none"
-            w="100%"
-          >
-            Sign Up
-          </Button>
+              w="100%"
+              isLoading={isLoading}
+              loadingText="Loading..."
+              isDisabled={isLoading}
+            >
+              Sign Up
+            </Button>
+          </Flex>
 
           <Flex gap="5px" mt="10px" alignItems="center">
             <Text color="#5d5b8d" fontSize="12px">
