@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useCallback, useState } from 'react'
 
 import { Flex, Text } from '@chakra-ui/layout'
 import { FormControl, FormLabel } from '@chakra-ui/form-control'
@@ -8,11 +8,8 @@ import { Input } from '@chakra-ui/input'
 import { Button } from '@chakra-ui/button'
 
 import { MdAddPhotoAlternate } from 'react-icons/md'
-import {
-  createUserAuthetication,
-  uploadImage,
-  createUserDoc
-} from '../services/firebase/auth'
+import { createUserAuthetication } from '../services/firebase/auth'
+// import { useAuth } from '../hooks/useAuth'
 
 interface ICreateUserDocResponse {
   uid: string
@@ -26,13 +23,28 @@ export default function Register() {
   const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  // const [file, setFile] = useState<FileList | null>(null)
-  const [file, setFile] = useState<FileList | null>(null)
+  const [profileImage, setProfileImage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   const handleRedirectToLogin = () => {
     router.push('/')
   }
+
+  const handleImageUpload = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+      if (!event.target.files?.length) {
+        return
+      }
+
+      const file = event.target.files[0]
+      const fileReader = new FileReader()
+      fileReader.onloadend = () => {
+        setProfileImage(fileReader.result as string)
+      }
+      fileReader.readAsDataURL(file)
+    },
+    []
+  )
 
   const handleSignUp = async (e: FormEvent) => {
     e.preventDefault()
@@ -47,7 +59,8 @@ export default function Register() {
       const response = await createUserAuthetication({
         email,
         password,
-        displayName
+        displayName: displayName.toLowerCase(),
+        file: profileImage as string
       })
 
       router.push('/')
@@ -58,7 +71,7 @@ export default function Register() {
       setDisplayName('')
       setEmail('')
       setPassword('')
-      setFile(null)
+      setProfileImage(null)
       setIsLoading(false)
     }
   }
@@ -161,7 +174,8 @@ export default function Register() {
                 id="file"
                 name="file"
                 type="file"
-                onChange={(e) => setFile(e.target.files)}
+                // onChange={(e) => setFile(e.target.files)}
+                onChange={handleImageUpload}
                 display="none"
                 p="15px"
                 border="none"
@@ -180,7 +194,7 @@ export default function Register() {
               color="#fff"
               p="10px"
               fontWeight="bold"
-              cursor="pointer"
+              cursor={isLoading ? 'not-allowed' : 'pointer'}
               border="none"
               w="100%"
               isLoading={isLoading}

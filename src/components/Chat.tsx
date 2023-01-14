@@ -1,9 +1,10 @@
 import { Flex, Text } from '@chakra-ui/layout'
 
-import { IoMdVideocam, IoIosMore } from 'react-icons/io'
-import { HiUserAdd } from 'react-icons/hi'
 import { Messages } from './Messages'
 import { ChatInput } from './ChatInput'
+
+import { IoMdVideocam, IoIosMore } from 'react-icons/io'
+import { HiUserAdd } from 'react-icons/hi'
 
 export function Chat() {
   return (

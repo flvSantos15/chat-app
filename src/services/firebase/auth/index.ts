@@ -1,140 +1,109 @@
 import {
   createUserWithEmailAndPassword,
-  updateProfile,
-  User
+  signInWithEmailAndPassword
 } from 'firebase/auth'
-import { doc, setDoc } from 'firebase/firestore'
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import { auth, storage, db } from '../../firebase'
+import {
+  doc,
+  setDoc,
+  getDocs,
+  getDoc,
+  query,
+  collection,
+  where
+} from 'firebase/firestore'
+import { auth, db } from '../../firebase'
 
 interface CreateUserProps {
   email: string
   password: string
   displayName: string
+  file: string
 }
 
 export async function createUserAuthetication({
   email,
   password,
-  displayName
+  displayName,
+  file
 }: CreateUserProps) {
   return await createUserWithEmailAndPassword(auth, email, password).then(
     async (userCredential) => {
       const user = userCredential.user
 
-      const collectionPath = 'users'
-
       const userDoc = {
         uid: user.uid,
         displayName,
-        email
+        email,
+        photoURL: file
       }
 
-      const userDocCollectionReference = doc(db, collectionPath, user.uid)
+      const userDocCollectionReference = doc(db, 'users', user.uid)
+
+      const userChatDocCollectionReference = doc(db, 'usersChats', user.uid)
 
       await setDoc(userDocCollectionReference, userDoc)
+
+      await setDoc(userChatDocCollectionReference, {})
 
       return user
     }
   )
 }
 
-interface UploadImageProps {
-  name: string
-  file: Blob | Uint8Array | ArrayBuffer
+interface SignInRequest {
   email: string
-  user: User
+  password: string
 }
 
-export async function uploadImage({
-  file,
-  name,
-  user,
-  email
-}: UploadImageProps) {
-  const storageRef = ref(storage, name)
-
-  const uploadTask = uploadBytesResumable(storageRef, file)
-
-  uploadTask.on(
-    'state_changed',
-    // (snapshot) => {
-    //   const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-    //   console.log('Upload is ' + progress + '% done')
-    //   switch (snapshot.state) {
-    //     case 'paused':
-    //       console.log('Upload is paused')
-    //       break
-    //     case 'running':
-    //       console.log('Upload is running')
-    //       break
-    //   }
-    // },
-    (error) => {
-      // Handle unsuccessful uploads
-      return error
-    },
-    () => {
-      // Handle successful uploads on complete
-      // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-      getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-        // console.log('File available at', downloadURL)
-        await updateProfile(user, {
-          displayName: name
-          // photoURL: downloadURL
-        })
-
-        const collectionPath = 'users'
-
-        const userDoc = {
-          // dados do user que quero guardar
-          uid: user.uid,
-          displayName: name,
-          email
-          // photoURL: downloadURL
-        }
-
-        const userDocCollectionReference = doc(db, collectionPath, user.uid)
-
-        await setDoc(userDocCollectionReference, userDoc)
-      })
-    }
-  )
-}
-
-interface CreateUserDoc {
-  user: User
-  displayName: string
-  email: string
-}
-
-export const createUserDoc = async ({
-  user,
-  displayName,
-  email
-}: CreateUserDoc) => {
+export const signIn = async ({ email, password }: SignInRequest) => {
   try {
-    const collectionPath = 'users'
-
-    const userDoc = {
-      // dados do user que quero guardar
-      uid: user.uid,
-      displayName,
-      email
-      // photoURL: downloadURL
-    }
-
-    const userDocCollectionReference = doc(db, collectionPath, user.uid)
-
-    await setDoc(userDocCollectionReference, userDoc)
-
-    console.log({
-      db,
-      userDocCollectionReference
-    })
-
-    return userDoc
+    return await signInWithEmailAndPassword(auth, email, password)
   } catch (err) {
     return err
   }
+}
+
+interface GetUserDataRequest {
+  uid: string
+}
+
+export const getUserData = async ({ uid }: GetUserDataRequest) => {
+  const collectionPath = 'users'
+
+  const docRef = doc(db, collectionPath, uid)
+
+  const docResponse = await getDoc(docRef)
+
+  if (docResponse.exists()) {
+    const { displayName, email, uid, photoURL } = docResponse.data()
+
+    return { displayName, email, uid, photoURL }
+  }
+}
+
+interface GetUserRequest {
+  userName: string
+}
+
+interface GetUserResponse {
+  displayName: string
+  email: string
+  photoURL: string
+}
+
+export const getUser = async ({ userName }: GetUserRequest) => {
+  const collectionRef = collection(db, 'users')
+
+  const firebaseQuery = query(
+    collectionRef,
+    where('displayName', '==', userName)
+  )
+
+  const querySnapshot = await getDocs(firebaseQuery)
+
+  const queryResponse = querySnapshot.docs.map((document) =>
+    document.data()
+  )[0] as GetUserResponse
+
+  return queryResponse
 }

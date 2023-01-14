@@ -1,5 +1,6 @@
-import { Flex } from '@chakra-ui/layout'
 import { Message } from './Message'
+
+import { Flex } from '@chakra-ui/layout'
 
 export function Messages() {
   return (

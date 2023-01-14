@@ -1,7 +1,10 @@
 import { useRouter } from 'next/router'
 
 import { signOut } from 'firebase/auth'
+
 import { auth } from '../services/firebase'
+
+import { useAuth } from '../hooks/useAuth'
 
 import { Avatar } from '@chakra-ui/avatar'
 import { Button } from '@chakra-ui/button'
@@ -9,9 +12,10 @@ import { Flex, Text } from '@chakra-ui/layout'
 
 export function Navbar() {
   const router = useRouter()
+  const { currentUser } = useAuth()
 
-  const handleSignOut = () => {
-    signOut(auth)
+  const handleSignOut = async () => {
+    await signOut(auth)
 
     router.push('/')
   }
@@ -27,13 +31,13 @@ export function Navbar() {
     >
       <Text fontWeight="bold">Chat App</Text>
       <Flex gap="10px" alignItems="center">
-        <Avatar size="sm" />
-        <Text>John</Text>
+        <Avatar src={currentUser?.photoURL as string} size="sm" />
+        <Text>{currentUser?.displayName}</Text>
         <Button
           colorScheme="none"
           bg="#5d5b8d"
           color="#ddddf7"
-          fontSize="10px"
+          fontSize="12px"
           h="2rem"
           _hover={{
             opacity: '0.7'

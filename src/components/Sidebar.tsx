@@ -1,7 +1,8 @@
-import { Flex } from '@chakra-ui/layout'
 import { Chats } from './Chats'
 import { Navbar } from './Navbar'
 import { Search } from './Search'
+
+import { Flex } from '@chakra-ui/layout'
 
 export function Sidebar() {
   return (

@@ -1,5 +1,8 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { useState, FormEvent } from 'react'
+
+import { signIn } from '../services/firebase/auth'
 
 import { Flex, Text } from '@chakra-ui/layout'
 import { FormControl } from '@chakra-ui/form-control'
@@ -9,8 +12,29 @@ import { Button } from '@chakra-ui/button'
 export default function Login() {
   const router = useRouter()
 
-  const handleSignIn = () => {
-    router.push('/home')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSignIn = (event: FormEvent) => {
+    event.preventDefault()
+
+    setIsSubmitting(true)
+
+    try {
+      signIn({
+        email,
+        password
+      })
+
+      router.push('/home')
+    } catch (err) {
+      console.log(err, 'erro on handleSignIng')
+    } finally {
+      setEmail('')
+      setPassword('')
+      setIsSubmitting(false)
+    }
   }
 
   const handleRedirectToRegister = () => {
@@ -49,46 +73,52 @@ export default function Login() {
             Login
           </Text>
 
-          <FormControl display="flex" flexDir="column" gap="15px">
-            <Input
-              type="email"
-              placeholder="email"
-              p="15px"
-              border="none"
-              w="280px"
-              borderBottom="1px solid #a7bcff"
-              _placeholder={{
-                color: 'rgba(175, 175, 175)'
-              }}
-            />
-          </FormControl>
+          <Flex as="form" flexDir="column" gap="14px" onSubmit={handleSignIn}>
+            <FormControl display="flex" flexDir="column" gap="15px">
+              <Input
+                type="email"
+                placeholder="email"
+                p="15px"
+                border="none"
+                w="280px"
+                borderBottom="1px solid #a7bcff"
+                _placeholder={{
+                  color: 'rgba(175, 175, 175)'
+                }}
+              />
+            </FormControl>
 
-          <FormControl display="flex" flexDir="column" gap="15px">
-            <Input
-              type="password"
-              placeholder="password"
-              p="15px"
-              border="none"
-              w="280px"
-              borderBottom="1px solid #a7bcff"
-              _placeholder={{
-                color: 'rgba(175, 175, 175)'
-              }}
-            />
-          </FormControl>
+            <FormControl display="flex" flexDir="column" gap="15px">
+              <Input
+                type="password"
+                placeholder="password"
+                p="15px"
+                border="none"
+                w="280px"
+                borderBottom="1px solid #a7bcff"
+                _placeholder={{
+                  color: 'rgba(175, 175, 175)'
+                }}
+              />
+            </FormControl>
 
-          <Button
-            colorScheme="none"
-            bg="#7b96ec"
-            color="#fff"
-            p="10px"
-            fontWeight="bold"
-            cursor="pointer"
-            border="none"
-            w="100%"
-          >
-            Sign In
-          </Button>
+            <Button
+              type="submit"
+              colorScheme="none"
+              bg="#7b96ec"
+              color="#fff"
+              p="10px"
+              fontWeight="bold"
+              cursor={isSubmitting ? 'not-allowed' : 'pointer'}
+              border="none"
+              w="100%"
+              isLoading={isSubmitting}
+              loadingText="Submitting..."
+              isDisabled={isSubmitting}
+            >
+              Sign In
+            </Button>
+          </Flex>
 
           <Flex mt="10px" gap="10px" alignItems="center">
             <Text color="#5d5b8d" fontSize="12px">

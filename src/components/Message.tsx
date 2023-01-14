@@ -1,6 +1,7 @@
+import Image from 'next/image'
+
 import { Avatar } from '@chakra-ui/avatar'
 import { Flex, Text } from '@chakra-ui/layout'
-import Image from 'next/image'
 
 export function Message() {
   const owner = true as boolean

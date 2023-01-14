@@ -1,9 +1,22 @@
+import {
+  createContext,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback
+} from 'react'
+
 import { onAuthStateChanged, User } from 'firebase/auth'
-import { createContext, ReactNode, useEffect, useMemo, useState } from 'react'
 import { auth } from '../services/firebase'
+import { getUserData } from '../services/firebase/auth'
+
+import { JonImg } from '../../JonImg'
 
 interface AuthContextData {
-  user: User | null
+  user: User
+  currentUser: User
+  userName: string
 }
 
 interface AuthProviderProps {
@@ -13,12 +26,30 @@ interface AuthProviderProps {
 export const AuthContext = createContext({} as AuthContextData)
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<User>({} as User)
+  const [currentUser, setCurrentUser] = useState<User>({} as User)
+  const [userName, setUserName] = useState('')
+
+  const getUserAdditionalData = async () => {
+    const userRes = await getUserData({ uid: user?.uid })
+
+    if (userRes) {
+      const { displayName, photoURL } = userRes
+
+      let userAdditional = {
+        ...user
+      }
+
+      userAdditional.displayName = displayName as string
+      userAdditional.photoURL = photoURL as string
+
+      setCurrentUser(userAdditional)
+    }
+  }
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
-      setUser(user)
-      console.log(user)
+      setUser(user as User)
     })
 
     return () => {
@@ -26,11 +57,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [])
 
+  useEffect(() => {
+    getUserAdditionalData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
+
   const contextValues = useMemo(
     () => ({
-      user
+      user,
+      currentUser,
+      userName
     }),
-    [user]
+    [user, currentUser, userName]
   )
 
   return (
