@@ -16,8 +16,10 @@ export function Search() {
   const [userName, setUserName] = useState('')
   const [user, setUser] = useState<User | null>(null)
 
+  // parei no 1:23:00
   const handleSearch = async () => {
     try {
+      // vou ter que recriar os users e descomentar essa linha de codigo
       // const response = await getUser({ userName: userName.toLowerCase() })
       const response = await getUser({ userName })
       setUser(response as User)
