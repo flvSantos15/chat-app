@@ -63,7 +63,9 @@ export default function Register() {
         file: profileImage as string
       })
 
-      router.push('/')
+      if (response.email) {
+        router.push('/')
+      }
     } catch (err) {
       // configurar o sentry aqui
       console.log(err, 'erro no handleSignUp no register')

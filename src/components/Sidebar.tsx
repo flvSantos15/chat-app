@@ -10,8 +10,6 @@ export function Sidebar() {
       <Navbar />
       <Search />
       <Chats />
-      <Chats />
-      <Chats />
     </Flex>
   )
 }

@@ -1,7 +1,4 @@
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
-} from 'firebase/auth'
+import { createUserWithEmailAndPassword, User } from 'firebase/auth'
 import {
   doc,
   setDoc,
@@ -9,7 +6,10 @@ import {
   getDoc,
   query,
   collection,
-  where
+  where,
+  updateDoc,
+  serverTimestamp,
+  onSnapshot
 } from 'firebase/firestore'
 import { auth, db } from '../../firebase'
 
@@ -48,19 +48,6 @@ export async function createUserAuthetication({
       return user
     }
   )
-}
-
-interface SignInRequest {
-  email: string
-  password: string
-}
-
-export const signIn = async ({ email, password }: SignInRequest) => {
-  try {
-    return await signInWithEmailAndPassword(auth, email, password)
-  } catch (err) {
-    return err
-  }
 }
 
 interface GetUserDataRequest {
@@ -106,4 +93,64 @@ export const getUser = async ({ userName }: GetUserRequest) => {
   )[0] as GetUserResponse
 
   return queryResponse
+}
+
+type CustomUserProps = Pick<User, 'displayName' | 'email' | 'photoURL' | 'uid'>
+
+interface GetUserChatResponse {
+  currentUser: CustomUserProps
+  selectedUser: CustomUserProps
+}
+
+export const getUserChat = async ({
+  currentUser,
+  selectedUser
+}: GetUserChatResponse) => {
+  const combinedId =
+    currentUser.uid > selectedUser.uid
+      ? currentUser.uid + selectedUser.uid
+      : selectedUser.uid + currentUser.uid
+
+  const docRef = doc(db, 'chats', combinedId)
+
+  const response = await getDoc(docRef)
+
+  if (!response.exists()) {
+    // creat chat
+    await setDoc(docRef, { messages: [] })
+
+    // create user chat
+    const docUpdateCurrentUserRef = doc(db, 'usersChats', selectedUser.uid)
+    const docUpdateRef = doc(db, 'usersChats', currentUser.uid)
+
+    await updateDoc(docUpdateRef, {
+      [combinedId + '.userInfo']: {
+        uid: selectedUser.uid,
+        displayName: selectedUser.displayName,
+        photoURL: selectedUser.photoURL
+      },
+      [combinedId + '.date']: serverTimestamp()
+    })
+
+    await updateDoc(docUpdateCurrentUserRef, {
+      [combinedId + '.userInfo']: {
+        uid: currentUser.uid,
+        displayName: currentUser.displayName,
+        photoURL: currentUser.photoURL
+      },
+      [combinedId + '.date']: serverTimestamp()
+    })
+  }
+}
+
+interface GetChatsRequest {
+  currentUser: User | null
+}
+
+export const getChats = async ({ currentUser }: GetChatsRequest) => {
+  const docsRef = doc(db, 'usersChats', currentUser?.uid as string)
+
+  await onSnapshot(docsRef, (doc) => {
+    const response = doc.data()
+  })
 }

@@ -1,5 +1,7 @@
 import { Flex, Text } from '@chakra-ui/layout'
 
+import { useChat } from '../hooks/useChat'
+
 import { Messages } from './Messages'
 import { ChatInput } from './ChatInput'
 
@@ -7,6 +9,8 @@ import { IoMdVideocam, IoIosMore } from 'react-icons/io'
 import { HiUserAdd } from 'react-icons/hi'
 
 export function Chat() {
+  const { data } = useChat()
+
   return (
     <Flex flex={2} flexDir="column">
       <Flex
@@ -18,7 +22,7 @@ export function Chat() {
         p="10px"
         color="lightgray"
       >
-        <Text>Jane</Text>
+        <Text>{data.user?.displayName}</Text>
         <Flex gap="10px">
           <IoMdVideocam size="2rem" />
           <HiUserAdd size="2rem" />

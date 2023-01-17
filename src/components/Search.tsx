@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 
-import { getUser } from '../services/firebase/auth'
+import { getUser, getUserChat } from '../services/firebase/auth'
+
+import { useAuth } from '../hooks/useAuth'
 
 import { Input } from '@chakra-ui/input'
 import { Flex, Text } from '@chakra-ui/layout'
@@ -10,21 +12,36 @@ interface User {
   photoURL: string
   email: string
   displayName: string
+  uid: string
 }
 
 export function Search() {
+  const { currentUser } = useAuth()
+
   const [userName, setUserName] = useState('')
   const [user, setUser] = useState<User | null>(null)
 
-  // parei no 1:23:00
   const handleSearch = async () => {
     try {
-      // vou ter que recriar os users e descomentar essa linha de codigo
-      // const response = await getUser({ userName: userName.toLowerCase() })
-      const response = await getUser({ userName })
+      const response = await getUser({ userName: userName.toLowerCase() })
+
       setUser(response as User)
     } catch (err) {
       console.log(err)
+    }
+  }
+
+  const handleSelectUser = async () => {
+    try {
+      await getUserChat({
+        currentUser: currentUser as User,
+        selectedUser: user as User
+      })
+    } catch (err) {
+      console.log(err, 'err no handleSelectUser no search.tsx')
+    } finally {
+      setUser(null)
+      setUserName('')
     }
   }
 
@@ -63,6 +80,7 @@ export function Search() {
           _hover={{
             bg: '#2f2d52'
           }}
+          onClick={handleSelectUser}
         >
           <Avatar src={user?.photoURL} />
           <Flex>

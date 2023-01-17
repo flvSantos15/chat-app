@@ -6,17 +6,20 @@ import {
   useState,
   useCallback
 } from 'react'
+import { useRouter } from 'next/router'
 
-import { onAuthStateChanged, User } from 'firebase/auth'
+import { User, signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../services/firebase'
 import { getUserData } from '../services/firebase/auth'
 
-import { JonImg } from '../../JonImg'
-
+interface SignInRequest {
+  email: string
+  password: string
+}
 interface AuthContextData {
-  user: User
-  currentUser: User
-  userName: string
+  user: User | null
+  currentUser: User | null
+  SignIn: (value: SignInRequest) => void
 }
 
 interface AuthProviderProps {
@@ -26,12 +29,27 @@ interface AuthProviderProps {
 export const AuthContext = createContext({} as AuthContextData)
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User>({} as User)
-  const [currentUser, setCurrentUser] = useState<User>({} as User)
-  const [userName, setUserName] = useState('')
+  const router = useRouter()
+
+  const [user, setUser] = useState<User | null>(null)
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
+
+  const SignIn = async ({ email, password }: SignInRequest) => {
+    try {
+      const { user } = await signInWithEmailAndPassword(auth, email, password)
+
+      setUser(user)
+
+      if (user) {
+        router.push('/home')
+      }
+    } catch (err) {
+      return err
+    }
+  }
 
   const getUserAdditionalData = async () => {
-    const userRes = await getUserData({ uid: user?.uid })
+    const userRes = await getUserData({ uid: user?.uid as string })
 
     if (userRes) {
       const { displayName, photoURL } = userRes
@@ -43,36 +61,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
       userAdditional.displayName = displayName as string
       userAdditional.photoURL = photoURL as string
 
-      setCurrentUser(userAdditional)
+      setCurrentUser(userAdditional as User)
     }
   }
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      setUser(user as User)
-    })
-
-    return () => {
-      unsub()
-    }
-  }, [])
 
   useEffect(() => {
     getUserAdditionalData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
-  const contextValues = useMemo(
-    () => ({
-      user,
-      currentUser,
-      userName
-    }),
-    [user, currentUser, userName]
-  )
+  useEffect(() => {
+    if (router.pathname === '/home' && !user) {
+      router.push('/')
+    }
+  }, [user, router])
 
   return (
-    <AuthContext.Provider value={contextValues}>
+    <AuthContext.Provider
+      value={{
+        user,
+        currentUser,
+        SignIn
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

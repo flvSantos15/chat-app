@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useState, FormEvent } from 'react'
 
-import { signIn } from '../services/firebase/auth'
+import { useAuth } from '../hooks/useAuth'
 
 import { Flex, Text } from '@chakra-ui/layout'
 import { FormControl } from '@chakra-ui/form-control'
@@ -11,23 +11,22 @@ import { Button } from '@chakra-ui/button'
 
 export default function Login() {
   const router = useRouter()
+  const { SignIn } = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSignIn = (event: FormEvent) => {
+  const handleSignIn = async (event: FormEvent) => {
     event.preventDefault()
 
     setIsSubmitting(true)
 
     try {
-      signIn({
+      await SignIn({
         email,
         password
       })
-
-      router.push('/home')
     } catch (err) {
       console.log(err, 'erro on handleSignIng')
     } finally {
@@ -77,6 +76,8 @@ export default function Login() {
             <FormControl display="flex" flexDir="column" gap="15px">
               <Input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="email"
                 p="15px"
                 border="none"
@@ -91,6 +92,8 @@ export default function Login() {
             <FormControl display="flex" flexDir="column" gap="15px">
               <Input
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="password"
                 p="15px"
                 border="none"
