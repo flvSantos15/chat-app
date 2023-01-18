@@ -42,33 +42,36 @@ export function Chats() {
   }, [currentUser])
   return (
     <Flex w="100%">
-      {chats?.map((chat) => (
-        <Flex
-          key={chat[0]}
-          w="100%"
-          alignItems="center"
-          p="10px"
-          gap="10px"
-          color="#fff"
-          cursor="pointer"
-          _hover={{
-            bg: '#2f2d52'
-          }}
-          onClick={() => {
-            handleSelectUserChat(chat[1]?.userInfo)
-          }}
-        >
-          <Avatar src={chat[1]?.userInfo?.photoURL} />
-          <Flex flexDir="column">
-            <Text fontSize="18px" fontWeight="500">
-              {chat[1]?.userInfo?.displayName}
-            </Text>
-            <Text fontSize="14px" color="lightgray">
-              {chat[1]?.userInfo?.lastMessage}
-            </Text>
+      {chats
+        ?.sort((a, b) => b[1].date - a[1].date)
+        .map((chat) => (
+          <Flex
+            key={chat[0]}
+            w="100%"
+            alignItems="center"
+            p="10px"
+            gap="10px"
+            color="#fff"
+            cursor="pointer"
+            _hover={{
+              bg: '#2f2d52'
+            }}
+            onClick={() => {
+              handleSelectUserChat(chat[1]?.userInfo)
+            }}
+          >
+            <Avatar src={chat[1]?.userInfo?.photoURL} />
+            <Flex flexDir="column">
+              <Text fontSize="18px" fontWeight="500">
+                {chat[1]?.userInfo?.displayName}
+              </Text>
+              <Text fontSize="14px" color="lightgray">
+                {/* {chat[1]?.lastMessage} */}
+                {chat[1]?.lastMessage.text}
+              </Text>
+            </Flex>
           </Flex>
-        </Flex>
-      ))}
+        ))}
     </Flex>
   )
 }
