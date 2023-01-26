@@ -45,7 +45,7 @@ export function ChatInput() {
 
   const handleSend = async () => {
     if (img) {
-      await updateDoc(doc(db, 'chats', data.chatId), {
+      await updateDoc(doc(db, 'chats', String(data.chatId)), {
         messages: arrayUnion({
           id: uuid(),
           text,
@@ -55,7 +55,7 @@ export function ChatInput() {
         })
       })
     } else {
-      await updateDoc(doc(db, 'chats', data.chatId), {
+      await updateDoc(doc(db, 'chats', String(data.chatId)), {
         messages: arrayUnion({
           id: uuid(),
           text,
@@ -72,7 +72,7 @@ export function ChatInput() {
       [data.chatId + '.date']: serverTimestamp()
     })
 
-    await updateDoc(doc(db, 'usersChats', data.user.uid), {
+    await updateDoc(doc(db, 'usersChats', String(data.user?.uid)), {
       [data.chatId + '.lastMessage']: {
         text
       },

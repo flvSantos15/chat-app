@@ -16,6 +16,7 @@ export default function Home() {
     lg: false,
     xl: false
   })
+
   return (
     <>
       <Head>
