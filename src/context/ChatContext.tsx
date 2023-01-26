@@ -13,8 +13,8 @@ import { useAuth } from '../hooks/useAuth'
 type CustomUserProps = Pick<User, 'displayName' | 'email' | 'photoURL' | 'uid'>
 
 interface ChatState {
-  chatId: string
-  user: CustomUserProps
+  chatId: string | null
+  user: CustomUserProps | null
 }
 
 interface ChatContextData {
@@ -32,7 +32,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
   const { currentUser } = useAuth()
 
   const INITIAL_STATE: ChatState = {
-    chatId: 'null',
+    chatId: null,
     user: {
       displayName: 'null',
       email: 'null',
@@ -50,6 +50,11 @@ export function ChatProvider({ children }: ChatProviderProps) {
             String(currentUser?.uid) > action.payload?.uid
               ? currentUser?.uid + action.payload?.uid
               : action.payload?.uid + currentUser?.uid
+        }
+      case 'CLEAN_USER':
+        return {
+          user: null,
+          chatId: null
         }
 
       default:
