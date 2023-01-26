@@ -19,7 +19,8 @@
 
 <div align="center"><img src="chat-app-register.png" alt=""/></div>
 <div align="center"><img src="chat-app-login.png" alt=""/></div>
-<div align="center"><img src="chat-app-chat.png" alt=""/></div>
+<div align="center"><img src="chat-app-chat1.png" alt=""/></div>
+<div align="center"><img src="chat-app-chat2.png" alt=""/></div>
 
 <div id='technologies'>
   <h2>This application is being built using the following technologies:</h2>
