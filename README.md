@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<div align="center"><img src="chat-app-register.png" alt=""/></div>
 
-## Getting Started
+<div id='about'>
+  <h1 align="center">
+	  Chat App 🚀
+  </h1>
+  <h5 align="left">
+	  🚀 Chat app is a messeger app.
+  </h5>
+  <!-- <h5 align="left">
+	  As a developer I can never stop learning, I added some new functionallities to take
+    the application to the next level, 
+    the functionallities are Dark and Light mode of course, 
+    I made E2E tests with cypress.
+  </h5> -->
+</div>
 
-First, run the development server:
+# Pictures
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+<div align="center"><img src="chat-app-register.png" alt=""/></div>
+<div align="center"><img src="chat-app-login.png" alt=""/></div>
+<div align="center"><img src="chat-app-chat.png" alt=""/></div>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<div id='technologies'>
+  <h2>This application is being built using the following technologies:</h2>
+  
+  - [ReactJS](https://pt-br.reactjs.org/)
+  - [NextJS](https://nextjs.org/docs)
+  - [TypeScript](https://www.typescriptlang.org/)
+  - [Chakra-UI](https://chakra-ui.com/)
+  - [React-icons](https://react-icons.github.io/react-icons)
+  - [Firebase](https://firebase.google.com/docs)
+</div>
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+<div id='features'>
+  <h2>Features</h2>
+  
+    - [x] Register a account
+    - [x] Login
+    - [x] Send text message
+    - [x] Send image
+    - [x] Saving data in firestore
+</div>
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+<div id='aprendizados'>
+  <h2>Motivation</h2>
+    <p>I created this application to learn firebase.</p>
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+    - Creating account.
+    - Authentication with email and password.
+    - Getting data from firestore.
+    - Tests E2E with Cypress.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+</div>
 
-## Learn More
+<div id='author'>
+  <h2>Autor</h2>
 
-To learn more about Next.js, take a look at the following resources:
+ <img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/48564704?v=4" width="100px;" alt="picture of Flavio Santos"/>
+ <br />
+ <sub><b>Flavio Santos</b></sub>
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Built with ❤️ by Flavio Santos 👋🏽 get in touch!
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+[![Linkedin Badge](https://img.shields.io/badge/-flvSantos-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/flvSantos15/)](https://www.linkedin.com/in/flvSantos15/)
+[![Gmail Badge](https://img.shields.io/badge/-flvSantos300@gmail.com-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:flvSantos300@gmail.com)](mailto:flvSantos300@gmail.com)
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+</div>

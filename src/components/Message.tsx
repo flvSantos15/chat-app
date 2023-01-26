@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useAuth } from '../hooks/useAuth'
 import { useChat } from '../hooks/useChat'
 
-import { Avatar } from '@chakra-ui/avatar'
 import { Image } from '@chakra-ui/image'
 import { Flex, Text } from '@chakra-ui/layout'
 
@@ -66,7 +65,7 @@ export function Message({ message }: MessageProps) {
           h="50px"
           objectFit="cover"
         />
-        <Text>just now</Text>
+        {/* <Text>just now</Text> */}
       </Flex>
       <Flex
         w="100%"

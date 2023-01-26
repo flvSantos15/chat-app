@@ -1,11 +1,22 @@
 import Head from 'next/head'
 
 import { Flex } from '@chakra-ui/layout'
+import { useBreakpointValue } from '@chakra-ui/media-query'
 
 import { Chat } from '../components/Chat'
 import { Sidebar } from '../components/Sidebar'
+import { useChat } from '../hooks/useChat'
 
 export default function Home() {
+  const { data } = useChat()
+
+  const isMobileVersion = useBreakpointValue({
+    base: true,
+    md: false,
+    lg: false,
+    xl: false
+  })
+
   return (
     <>
       <Head>
@@ -19,12 +30,28 @@ export default function Home() {
         height="100vh"
         alignItems="center"
         justifyContent="center"
-        p="0.5rem"
+        p={{ base: '0', xl: '0.5rem' }}
       >
-        <Flex overflow="hidden" borderRadius="10px" w="100%" h="100%">
-          <Sidebar />
-          <Chat />
-        </Flex>
+        {isMobileVersion ? (
+          <Flex
+            overflow="hidden"
+            borderRadius={{ base: '0', xl: '10px' }}
+            w="100%"
+            h="100%"
+          >
+            {!data.chatId ? <Sidebar /> : <Chat />}
+          </Flex>
+        ) : (
+          <Flex
+            overflow="hidden"
+            borderRadius={{ base: '0', xl: '10px' }}
+            w="100%"
+            h="100%"
+          >
+            <Sidebar />
+            <Chat />
+          </Flex>
+        )}
       </Flex>
     </>
   )

@@ -24,7 +24,7 @@ export function Messages() {
   const [messages, setMessages] = useState<MessageProps[]>([])
 
   const handleGetMessages = async () => {
-    const docsRef = doc(db, 'chats', data.chatId)
+    const docsRef = doc(db, 'chats', String(data.chatId))
 
     await onSnapshot(docsRef, (doc) => {
       if (doc.exists()) {
