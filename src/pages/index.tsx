@@ -4,9 +4,11 @@ import { useState, FormEvent } from 'react'
 
 import { useAuth } from '../hooks/useAuth'
 
+import { CustomButton } from '../components/atoms/CustomButton'
+import { CustomInput } from '../components/atoms/CustomInput'
+
 import { Flex, Text } from '@chakra-ui/layout'
 import { FormControl } from '@chakra-ui/form-control'
-import { Input } from '@chakra-ui/input'
 import { Button } from '@chakra-ui/button'
 
 export default function Login() {
@@ -59,7 +61,7 @@ export default function Login() {
           flexDir="column"
           bg="#fff"
           py="20px"
-          px="60px"
+          px={{ base: '30px', xl: '60px' }}
           borderRadius="10px"
           gap="10px"
           alignItems="center"
@@ -74,53 +76,26 @@ export default function Login() {
 
           <Flex as="form" flexDir="column" gap="14px" onSubmit={handleSignIn}>
             <FormControl display="flex" flexDir="column" gap="15px">
-              <Input
+              <CustomInput
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email"
-                p="15px"
-                border="none"
-                w="280px"
-                borderBottom="1px solid #a7bcff"
-                _placeholder={{
-                  color: 'rgba(175, 175, 175)'
-                }}
               />
             </FormControl>
 
             <FormControl display="flex" flexDir="column" gap="15px">
-              <Input
+              <CustomInput
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="password"
-                p="15px"
-                border="none"
-                w="280px"
-                borderBottom="1px solid #a7bcff"
-                _placeholder={{
-                  color: 'rgba(175, 175, 175)'
-                }}
               />
             </FormControl>
 
-            <Button
-              type="submit"
-              colorScheme="none"
-              bg="#7b96ec"
-              color="#fff"
-              p="10px"
-              fontWeight="bold"
-              cursor={isSubmitting ? 'not-allowed' : 'pointer'}
-              border="none"
-              w="100%"
-              isLoading={isSubmitting}
-              loadingText="Submitting..."
-              isDisabled={isSubmitting}
-            >
+            <CustomButton isLoading={isSubmitting} loadingText="Submitting...">
               Sign In
-            </Button>
+            </CustomButton>
           </Flex>
 
           <Flex mt="10px" gap="10px" alignItems="center">

@@ -97,7 +97,7 @@ export default function Register() {
           flexDir="column"
           bg="#fff"
           py="20px"
-          px={{ base: '20px', xl: '60px' }}
+          px={{ base: '30px', xl: '60px' }}
           borderRadius="10px"
           gap="10px"
           alignItems="center"
@@ -176,7 +176,6 @@ export default function Register() {
                 id="file"
                 name="file"
                 type="file"
-                // onChange={(e) => setFile(e.target.files)}
                 onChange={handleImageUpload}
                 display="none"
                 p="15px"
