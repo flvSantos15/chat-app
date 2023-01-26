@@ -97,7 +97,7 @@ export default function Register() {
           flexDir="column"
           bg="#fff"
           py="20px"
-          px="60px"
+          px={{ base: '20px', xl: '60px' }}
           borderRadius="10px"
           gap="10px"
           alignItems="center"
